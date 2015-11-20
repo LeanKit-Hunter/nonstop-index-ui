@@ -1,7 +1,7 @@
 import React from "react";
+import lux from "lux.js";
 import { padLeft, map, flatten } from "lodash";
-import DropdownButton from "react-bootstrap/lib/DropdownButton";
-import MenuItem from "react-bootstrap/lib/MenuItem";
+import { DropdownButton, MenuItem } from "react-bootstrap/lib";
 
 import "./VersionGroup.less";
 
@@ -34,6 +34,8 @@ function slug( { owner, project, slug } ) {
 }
 
 export default React.createClass( {
+	mixins: [ lux.reactMixin.actionCreator ],
+	getActions: [ "loadHostStatus" ],
 	propTypes: {
 		className: React.PropTypes.string,
 		hosts: React.PropTypes.array,
@@ -43,7 +45,7 @@ export default React.createClass( {
 	getDefaultProps() {
 		return {
 			className: "",
-			hosts: null
+			hosts: []
 		};
 	},
 	renderBuildGroup( { packages }, build ) {
@@ -61,11 +63,19 @@ export default React.createClass( {
 		} ) );
 	},
 	handleOnRelease( pkg, event, name ) {
+		console.log( this.props.hosts );
 		const data = [];
 		[ "project", "owner", "branch", "version" ].forEach( function( field ) {
 			data.push( { op: "change", field, value: pkg[ field ] } );
 		} );
-		this.props.onRelease( { name, data } );
+		console.log(name);
+		//this.props.onRelease( { name, data } );
+		console.log( this.loadHostStatus( name ) );
+		this.setState( {
+			showModal: true,
+			selectedPackage: pkg,
+			selectedHost: { 'branch': 'puppy' }
+			});
 	},
 	renderRelease( pkg ) {
 		return <DropdownButton bsStyle="default" title="Deploy" id={ `dropdown-basic-${pkg.version}` } onSelect={ this.handleOnRelease.bind( this, pkg ) }>
@@ -112,6 +122,8 @@ export default React.createClass( {
 			<section className={ this.props.className }>
 				{ map( this.props.versions, this.renderVersionGroup ) }
 			</section>
+
+
 		);
 	}
 } );

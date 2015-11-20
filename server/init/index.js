@@ -1,5 +1,5 @@
 var autohost = require( "autohost" );
-var GitHubAuth = require( "autohost-github-auth" );
+//var GitHubAuth = require( "autohost-github-auth" );
 var when = require( "when" );
 var _ = require( "lodash" );
 
@@ -11,7 +11,7 @@ module.exports = function( options ) {
 	var metrics = options.metrics;
 	var config = options.config;
 	var configApp = options.configApp || _.noop;
-	var authProvider = new GitHubAuth( config );
+	//var authProvider = new GitHubAuth( config );
 
 	log( config.logging );
 
@@ -19,7 +19,7 @@ module.exports = function( options ) {
 		var hostConfig = config.host;
 		hostConfig.fount = fount;
 		hostConfig.metrics = metrics;
-		hostConfig.authProvider = authProvider;
+		/*hostConfig.authProvider = authProvider;*/
 
 		var sessionStore = require( "./session" )( autohost.sessionLib, config.session );
 		if ( sessionStore ) {
