@@ -35,7 +35,7 @@ function slug( { owner, project, slug } ) {
 
 export default React.createClass( {
 	mixins: [ lux.reactMixin.actionCreator ],
-	getActions: [ "loadHostStatus" ],
+	getActions: [ "loadHostStatus", "triggerDeploy", "cancelDeploy" ],
 	propTypes: {
 		className: React.PropTypes.string,
 		hosts: React.PropTypes.array,
@@ -62,20 +62,14 @@ export default React.createClass( {
 			);
 		} ) );
 	},
-	handleOnRelease( pkg, event, name ) {
-		console.log( this.props.hosts );
+	handleOnRelease( pkg, event, host ) {
 		const data = [];
 		[ "project", "owner", "branch", "version" ].forEach( function( field ) {
 			data.push( { op: "change", field, value: pkg[ field ] } );
 		} );
-		console.log(name);
 		//this.props.onRelease( { name, data } );
-		console.log( this.loadHostStatus( name ) );
-		this.setState( {
-			showModal: true,
-			selectedPackage: pkg,
-			selectedHost: { 'branch': 'puppy' }
-			});
+		this.loadHostStatus( host );
+		this.triggerDeploy( { pkg, host } );
 	},
 	renderRelease( pkg ) {
 		return <DropdownButton bsStyle="default" title="Deploy" id={ `dropdown-basic-${pkg.version}` } onSelect={ this.handleOnRelease.bind( this, pkg ) }>
@@ -122,7 +116,6 @@ export default React.createClass( {
 			<section className={ this.props.className }>
 				{ map( this.props.versions, this.renderVersionGroup ) }
 			</section>
-
 
 		);
 	}
